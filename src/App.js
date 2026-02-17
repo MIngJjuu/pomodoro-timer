@@ -9,8 +9,8 @@ const PomodoroTimer = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [currentVideo, setCurrentVideo] = useState('');
   const [videoPresets, setVideoPresets] = useState([
-    { id: 1, name: 'Lo-fi Study', url: 'https://www.youtube.com/watch?v=jfKfPfyJRdk', category: 'work' },
-    { id: 2, name: 'Rain ASMR', url: 'https://www.youtube.com/watch?v=q76bMs-NwRk', category: 'work' },
+    { id: 1, name: '마음이 조급할 때 듣는 브금', url: 'https://youtu.be/UMcqpEuMUrs?si=eja39lXcQaCuY3WL', category: 'work' },
+    { id: 2, name: '봄비 (春雨)', url: 'https://youtu.be/VT4Vm2TdJdg?si=xIy6xW9Y9DhBh0F3', category: 'work' },
     { id: 3, name: 'Motivational', url: 'https://www.youtube.com/watch?v=ZXsQAXx_ao0', category: 'break' }
   ]);
   const [newPresetName, setNewPresetName] = useState('');
@@ -21,7 +21,7 @@ const PomodoroTimer = () => {
   const intervalRef = useRef(null);
 
   const durations = { // 시간설정
-    work: 25 * 60,
+    work: 1 * 60,
     break: 5 * 60,
     longBreak: 15 * 60
   };
@@ -142,7 +142,7 @@ const PomodoroTimer = () => {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-8">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">
-          🍅 포모도로 타이머
+          포모도로 타이머 !
         </h1>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -164,14 +164,6 @@ const PomodoroTimer = () => {
                 }`}
               >
                 휴식
-              </button>
-              <button
-                onClick={() => changeMode('longBreak')}
-                className={`flex-1 py-2 rounded-lg font-semibold transition ${
-                  mode === 'longBreak' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600'
-                }`}
-              >
-                긴 휴식
               </button>
             </div>
 
