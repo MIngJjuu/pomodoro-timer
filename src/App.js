@@ -4,7 +4,7 @@ import { Play, Pause, RotateCcw, Settings, Plus, Trash2 } from 'lucide-react';
 const PomodoroTimer = () => {
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isActive, setIsActive] = useState(false);
-  const [mode, setMode] = useState('work'); // 'work', 'break', 'longBreak'
+  const [mode, setMode] = useState('work'); // 'work', 'break'
   const [sessions, setSessions] = useState(0);
   const [showSettings, setShowSettings] = useState(false);
   const [currentVideo, setCurrentVideo] = useState('');
@@ -21,9 +21,8 @@ const PomodoroTimer = () => {
   const intervalRef = useRef(null);
 
   const durations = { // 시간설정
-    work: 1 * 60,
-    break: 5 * 60,
-    longBreak: 15 * 60
+    work: 25 * 60,
+    break: 5 * 60
   };
 
   // YouTube video ID 추출
@@ -80,11 +79,11 @@ const PomodoroTimer = () => {
 
   const handleTimerComplete = () => {
     setIsActive(false);
-    if (mode === 'work') {
-      const newSessions = sessions + 1;
+    if (mode === 'work') { // 세션 완료 처리
+      const newSessions = sessions + 1; // 세션 증가
       setSessions(newSessions);
       if (newSessions % 4 === 0) {
-        setMode('longBreak');
+        setMode('longBreak'); // 수정 필요
         setTimeLeft(durations.longBreak);
       } else {
         setMode('break');
@@ -227,10 +226,10 @@ const PomodoroTimer = () => {
               </p>
             </div>
 
-            {/* 프리셋 관리 */}
+            {/* 플레이리스트 관리 */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-lg text-gray-700">프리셋 관리</h3>
+                <h3 className="font-semibold text-lg text-gray-700">플레이리스트 관리</h3>
                 <button
                   onClick={() => setShowSettings(!showSettings)}
                   className="text-gray-500 hover:text-gray-700"
@@ -243,7 +242,7 @@ const PomodoroTimer = () => {
                 <div className="space-y-3">
                   <input
                     type="text"
-                    placeholder="프리셋 이름"
+                    placeholder="플레이리스트 이름"
                     value={newPresetName}
                     onChange={(e) => setNewPresetName(e.target.value)}
                     className="w-full px-3 py-2 border rounded-lg"
@@ -268,11 +267,11 @@ const PomodoroTimer = () => {
                     className="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg font-semibold flex items-center justify-center gap-2"
                   >
                     <Plus size={20} />
-                    프리셋 추가
+                    플레이리스트 추가
                   </button>
 
                   <div className="border-t pt-4 mt-4">
-                    <h4 className="text-sm font-semibold mb-2 text-gray-600">저장된 프리셋</h4>
+                    <h4 className="text-sm font-semibold mb-2 text-gray-600">저장된 플레이리스트</h4>
                     <div className="space-y-2">
                       {videoPresets.map(preset => (
                         <div key={preset.id} className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg">
