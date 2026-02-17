@@ -78,22 +78,19 @@ const PomodoroTimer = () => {
   }, []);
 
   const handleTimerComplete = () => {
-    setIsActive(false);
-    if (mode === 'work') { // 세션 완료 처리
-      const newSessions = sessions + 1; // 세션 증가
-      setSessions(newSessions);
-      if (newSessions % 4 === 0) {
-        setMode('longBreak'); // 수정 필요
-        setTimeLeft(durations.longBreak);
-      } else {
-        setMode('break');
-        setTimeLeft(durations.break);
-      }
-    } else {
-      setMode('work');
-      setTimeLeft(durations.work);
-    }
-  };
+  setIsActive(false);
+  if (mode === 'work') {
+    // 작업 완료 시 세션 증가하고 휴식으로 전환
+    const newSessions = sessions + 1;
+    setSessions(newSessions);
+    setMode('break');
+    setTimeLeft(durations.break);
+  } else {
+    // 휴식 완료 시 다시 작업으로 전환
+    setMode('work');
+    setTimeLeft(durations.work);
+  }
+};
 
   const toggleTimer = () => {
     setIsActive(!isActive);
@@ -138,7 +135,7 @@ const PomodoroTimer = () => {
   const breakPresets = videoPresets.filter(p => p.category === 'break');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 p-8">
       <div className="max-w-6xl mx-auto">
         <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">
           포모도로 타이머 !
