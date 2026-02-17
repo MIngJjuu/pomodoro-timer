@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, RotateCcw, Settings, Plus, Trash2 } from 'lucide-react';
+import { Play, Pause, RotateCcw, Settings, Plus, Trash2, Clock } from 'lucide-react';
 
 const PomodoroTimer = () => {
   const [timeLeft, setTimeLeft] = useState(25 * 60);
@@ -7,22 +7,27 @@ const PomodoroTimer = () => {
   const [mode, setMode] = useState('work'); // 'work', 'break'
   const [sessions, setSessions] = useState(0);
   const [showSettings, setShowSettings] = useState(false);
+  const [showTimeSettings, setShowTimeSettings] = useState(false);
   const [currentVideo, setCurrentVideo] = useState('');
   const [videoPresets, setVideoPresets] = useState([
     { id: 1, name: '마음이 조급할 때 듣는 브금', url: 'https://youtu.be/UMcqpEuMUrs?si=eja39lXcQaCuY3WL', category: 'work' },
     { id: 2, name: '봄비 (春雨)', url: 'https://youtu.be/VT4Vm2TdJdg?si=xIy6xW9Y9DhBh0F3', category: 'work' },
-    { id: 3, name: 'Motivational', url: 'https://www.youtube.com/watch?v=ZXsQAXx_ao0', category: 'break' }
+    { id: 3, name: '내가 사랑한 류이치사카모토의 음악', url: 'https://youtu.be/8_p8VoHF2NE?si=dDFRFDC-VIFc9Vnq', category: 'work' }
   ]);
   const [newPresetName, setNewPresetName] = useState('');
   const [newPresetUrl, setNewPresetUrl] = useState('');
   const [newPresetCategory, setNewPresetCategory] = useState('work');
+  
+  // 사용자 정의 시간 설정 (분 단위)
+  const [customWorkTime, setCustomWorkTime] = useState(25);
+  const [customBreakTime, setCustomBreakTime] = useState(5);
 
   const playerRef = useRef(null);
   const intervalRef = useRef(null);
 
-  const durations = { // 시간설정
-    work: 25 * 60,
-    break: 5 * 60
+  const durations = {
+    work: customWorkTime * 60,
+    break: customBreakTime * 60
   };
 
   // YouTube video ID 추출
@@ -78,19 +83,17 @@ const PomodoroTimer = () => {
   }, []);
 
   const handleTimerComplete = () => {
-  setIsActive(false);
-  if (mode === 'work') {
-    // 작업 완료 시 세션 증가하고 휴식으로 전환
-    const newSessions = sessions + 1;
-    setSessions(newSessions);
-    setMode('break');
-    setTimeLeft(durations.break);
-  } else {
-    // 휴식 완료 시 다시 작업으로 전환
-    setMode('work');
-    setTimeLeft(durations.work);
-  }
-};
+    setIsActive(false);
+    if (mode === 'work') {
+      const newSessions = sessions + 1;
+      setSessions(newSessions);
+      setMode('break');
+      setTimeLeft(durations.break);
+    } else {
+      setMode('work');
+      setTimeLeft(durations.work);
+    }
+  };
 
   const toggleTimer = () => {
     setIsActive(!isActive);
@@ -103,7 +106,16 @@ const PomodoroTimer = () => {
 
   const changeMode = (newMode) => {
     setMode(newMode);
-    setTimeLeft(durations[newMode]);
+    const newTime = newMode === 'work' ? customWorkTime * 60 : customBreakTime * 60;
+    setTimeLeft(newTime);
+    setIsActive(false);
+  };
+
+  // 시간 설정 적용
+  const updateTimerSettings = () => {
+    const newTime = mode === 'work' ? customWorkTime * 60 : customBreakTime * 60;
+    setTimeLeft(newTime);
+    setShowTimeSettings(false);
     setIsActive(false);
   };
 
@@ -161,7 +173,51 @@ const PomodoroTimer = () => {
               >
                 휴식
               </button>
+              <button
+                onClick={() => setShowTimeSettings(!showTimeSettings)}
+                className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition"
+                title="시간 설정"
+              >
+                <Clock size={20} />
+              </button>
             </div>
+
+            {/* 시간 설정 패널 */}
+            {showTimeSettings && (
+              <div className="bg-blue-50 rounded-lg p-4 mb-6">
+                <h3 className="font-semibold text-gray-700 mb-3">⏱️ 타이머 시간 설정</h3>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-1">작업 시간 (분)</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="60"
+                      value={customWorkTime}
+                      onChange={(e) => setCustomWorkTime(parseInt(e.target.value) || 1)}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-600 mb-1">휴식 시간 (분)</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="30"
+                      value={customBreakTime}
+                      onChange={(e) => setCustomBreakTime(parseInt(e.target.value) || 1)}
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <button
+                    onClick={updateTimerSettings}
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-semibold transition"
+                  >
+                    시간 적용
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div className="text-center mb-8">
               <div className="text-8xl font-bold text-gray-800 mb-4">
@@ -242,26 +298,26 @@ const PomodoroTimer = () => {
                     placeholder="플레이리스트 이름"
                     value={newPresetName}
                     onChange={(e) => setNewPresetName(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-lg"
+                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
                   <input
                     type="text"
                     placeholder="유튜브 URL"
                     value={newPresetUrl}
                     onChange={(e) => setNewPresetUrl(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-lg"
+                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
                   <select
                     value={newPresetCategory}
                     onChange={(e) => setNewPresetCategory(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-lg"
+                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   >
                     <option value="work">작업용</option>
                     <option value="break">휴식용</option>
                   </select>
                   <button
                     onClick={addPreset}
-                    className="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg font-semibold flex items-center justify-center gap-2"
+                    className="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg font-semibold flex items-center justify-center gap-2 transition"
                   >
                     <Plus size={20} />
                     플레이리스트 추가
